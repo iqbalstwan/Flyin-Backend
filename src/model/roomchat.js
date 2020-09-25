@@ -1,0 +1,105 @@
+const connection = require("../config/mysql");
+
+module.exports = {
+  getMessageByUserId: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM messages LEFT JOIN user ON messages.user_id = user.user_id WHERE messages.user_id = ?",
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  getMessageChatByRoom: (roomId) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM messages WHERE roomchat_id = ?",
+        roomId,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  getRoomChatById: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM roomchat LEFT JOIN user ON roomchat.user_id = user.user_id WHERE roomchat.user_id = ?",
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  getNotificationById: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM notification LEFT JOIN user ON notification.user_id = user.user_id WHERE notification.user_id = ?",
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  postRoomChat: (setData) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "INSERT INTO roomchat SET ?",
+        setData,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              id: result.insertId,
+              ...setData,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    });
+  },
+  postMessage: (setData) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "INSERT INTO messages SET ?",
+        setData,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              msg_id: result.insertId,
+              ...setData,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    });
+  },
+  postNotification: (setData) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "INSERT INTO notification SET ?",
+        setData,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              notif_id: result.insertId,
+              ...setData,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    });
+  },
+};
