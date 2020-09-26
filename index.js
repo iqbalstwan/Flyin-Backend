@@ -55,6 +55,6 @@ app.use(morgan("dev"));
 
 app.use("/", routerNavigation);
 
-server.listen(3001, "127.0.0.1", () => {
-  console.log(`Express app is listening on host: 127.0.0.1 and port: 3001`);
+server.listen(3000, () => {
+  console.log(`Express app is listening on port: 3000`);
 });

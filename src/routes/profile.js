@@ -12,7 +12,7 @@ router.get("/", getAllProfile);
 router.get("/:id", getProfileById);
 
 router.patch("/:id", patchProfile);
-router.patch("/:id", uploadImage, patchImageProfile);
+router.patch("/patchimg/:id", uploadImage, patchImageProfile);
 
 // router.delete("/:id", deleteProfile);
 

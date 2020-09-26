@@ -125,7 +125,13 @@ module.exports = {
   patchProfile: async (request, response) => {
     try {
       const { id } = request.params;
-      const { user_id, user_name, profile_telp, profile_desc } = request.body;
+      const {
+        user_id,
+        user_name,
+        profile_name,
+        profile_telp,
+        profile_desc,
+      } = request.body;
       const checkUser = await getUserById(user_id);
       const checkId = await getProfileById(id);
       if (checkId.length > 0 && checkUser.length > 0) {
@@ -134,6 +140,7 @@ module.exports = {
         };
         await patchUser(setDataUser, user_id);
         const setDataProfile = {
+          profile_name,
           profile_telp,
           profile_desc,
           profile_updated_at: new Date(),
@@ -144,6 +151,7 @@ module.exports = {
         return helper.response(response, 404, `Profile By Id: ${id} Not Found`);
       }
     } catch (error) {
+      console.log(error);
       return helper.response(response, 400, "Bad Request", error);
     }
   },
@@ -174,7 +182,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
-      return helper.response(response, 400, "Bad Request", error);
+      //   return helper.response(response, 400, "Bad Request", error);
     }
   },
 };
