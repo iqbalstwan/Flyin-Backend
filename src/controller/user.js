@@ -55,6 +55,15 @@ module.exports = {
       return helper.response(response, 400, "Bad Request", error);
     }
   },
+  getUserById: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const result = await getUserById(id);
+      return helper.response(response, 200, "Get Product Success", result);
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request", error);
+    }
+  },
   register: async (request, response) => {
     const { user_email, user_password, user_name, user_phone } = request.body;
     const salt = bcrypt.genSaltSync(8);
@@ -130,7 +139,8 @@ module.exports = {
             user_id: checkDataUser[0].user_id,
             user_email: checkDataUser[0].user_email,
             user_name: checkDataUser[0].user_name,
-            user_img: checkDataUser[0].user_img,
+            profile_img: checkDataUser[0].profile_img,
+            profile_desc: checkDataUser[0].profile_desc,
             user_phone: checkDataUser[0].user_phone,
             user_status: checkDataUser[0].user_status,
           };
@@ -141,7 +151,7 @@ module.exports = {
           //       "Your account is not activated"
           //     );
           //   } else {
-          const token = jwt.sign(payload, "RAHASIA", { expiresIn: "30s" });
+          const token = jwt.sign(payload, "RAHASIA", { expiresIn: "24h" });
           payload = { ...payload, token };
           return helper.response(response, 200, "Success login", payload);
           //   }
@@ -153,6 +163,124 @@ module.exports = {
       }
     } catch (error) {
       return helper.response(response, 400, "Bad Request");
+    }
+  },
+  changePassword: async (request, response) => {
+    try {
+      const { keys } = request.query;
+      const { user_password } = request.body;
+      const checkDataUser = await checkKey(keys);
+      if (
+        request.query.keys === undefined ||
+        request.query.keys === null ||
+        request.query.keys === ""
+      ) {
+        return helper.response(response, 400, "Invalid Key");
+      }
+      if (checkDataUser.length > 0) {
+        const email = checkDataUser[0].user_email;
+        let setData = {
+          user_key: keys,
+          user_password,
+          user_updated_at: new Date(),
+        };
+        const difference =
+          setData.user_updated_at - checkDataUser[0].user_updated_at;
+        const minutesDifference = Math.floor(difference / 1000 / 60);
+        if (minutesDifference > 5) {
+          const data = {
+            user_key: "",
+            user_updated_at: new Date(),
+          };
+          await changePassword(data, email);
+          return helper.response(response, 400, "Key has expired");
+        } else if (
+          request.body.user_password === undefined ||
+          request.body.user_password === null ||
+          request.body.user_password === ""
+        ) {
+          return helper.response(response, 400, "Password must be filled !");
+        } else if (
+          request.body.confirm_password === undefined ||
+          request.body.confirm_password === null ||
+          request.body.confirm_password === ""
+        ) {
+          return helper.response(
+            response,
+            400,
+            "Confirm Password must be filled !"
+          );
+        } else if (
+          request.body.user_password.length < 8 ||
+          request.body.user_password.length > 16
+        ) {
+          return helper.response(
+            response,
+            400,
+            "Password must be 8-16 characters"
+          );
+        } else if (
+          request.body.confirm_password !== request.body.user_password
+        ) {
+          return helper.response(response, 400, "Password didn't match");
+        } else {
+          const salt = bcrypt.genSaltSync(10);
+          const encryptPassword = bcrypt.hashSync(user_password, salt);
+          setData.user_password = encryptPassword;
+          setData.user_key = "";
+        }
+        const result = await changePassword(setData, email);
+        return helper.response(
+          response,
+          200,
+          "Success Password Updated",
+          result
+        );
+      } else {
+        return helper.response(response, 404, `Invalid key`);
+      }
+    } catch (error) {
+      return helper.response(response, 404, "Bad Request", error);
+    }
+  },
+  forgotPassword: async (request, response) => {
+    try {
+      const { user_email } = request.body;
+      const keys = Math.round(Math.random() * 100000);
+      const checkDataUser = await checkUser(user_email);
+      if (checkDataUser.length >= 1) {
+        const data = {
+          user_key: keys,
+          user_updated_at: new Date(),
+        };
+        await changePassword(data, user_email);
+        const transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: "marakez1234@gmail.com",
+            pass: "boromir12",
+          },
+        });
+        await transporter.sendMail({
+          from: '"Flyin"',
+          to: user_email,
+          subject: "Flyin - Forgot Password",
+          html: `<a href="http://localhost:8080/change?keys=${keys}">Click Here To Change Password</a>`,
+        }),
+          function (error) {
+            if (error) {
+              return helper.response(response, 400, "Email not sent !");
+            }
+          };
+        return helper.response(response, 200, "Email has been sent !");
+      } else {
+        return helper.response(response, 400, "Email is not registered !");
+      }
+    } catch (error) {
+      console.log(error);
+      return helper.response(response, 400, "Bad Request", error);
     }
   },
 };

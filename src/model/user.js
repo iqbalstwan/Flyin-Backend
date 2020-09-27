@@ -1,35 +1,6 @@
 const connection = require("../config/mysql");
 
 module.exports = {
-  getAllWorker: (sort, limit, offset) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        `SELECT * FROM user JOIN profile ON user.user_id = profile.user_id WHERE user.user_status = 1 AND user.user_role = 1 ${sort} LIMIT ? OFFSET ?`,
-        [limit, offset],
-        (error, result) => {
-          if (!error) {
-            result.map((value) => {
-              delete value.user_password;
-              delete value.user_key;
-            });
-            resolve(result);
-          } else {
-            reject(new Error(error));
-          }
-        }
-      );
-    });
-  },
-  getCountWorker: (sort) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        `SELECT COUNT(*) as total FROM user JOIN profile ON user.user_id = profile.user_id WHERE user.user_status = 1 AND user.user_role = 1 ${sort}`,
-        (error, result) => {
-          !error ? resolve(result[0].total) : reject(new Error(error));
-        }
-      );
-    });
-  },
   getAllUser: (sort, limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -65,13 +36,12 @@ module.exports = {
   getUserById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM user WHERE user_id = ?",
+        "SELECT user.user_id,user.user_name,user.user_email,user.user_password,user.user_phone,user.user_created_at,user.user_status,profile.profile_img,profile.profile_desc from user INNER JOIN profile ON user.user_id = profile.user_id where user.user_id = ?",
         id,
         (error, result) => {
           if (!error) {
             result.map((value) => {
               delete value.user_password;
-              delete value.user_key;
             });
             resolve(result);
           } else {
@@ -115,7 +85,7 @@ module.exports = {
   checkUser: (email) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM user WHERE user_email = ?",
+        "SELECT user.user_id,user.user_name,user.user_email,user.user_password,user.user_phone,user.user_created_at,user.user_status,profile.profile_img,profile.profile_desc from user INNER JOIN profile ON user.user_id = profile.user_id where user.user_email = ?",
         email,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));

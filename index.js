@@ -52,6 +52,7 @@ io.on("connection", (socket) => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan("dev"));
+app.use(express.static("uploads"));
 
 app.use("/", routerNavigation);
 

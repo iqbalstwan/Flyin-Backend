@@ -1,19 +1,20 @@
 const router = require("express").Router();
 const {
-  getMessageChatByRoom,
-  getMessageByUserId,
-  getRoomChatById,
-  getNotificationById,
+  addFriend,
+  getFriend,
+  getRoomMessage,
+  //   getNotificationById,
   postRoomChat,
   postMessage,
 } = require("../controller/roomchat");
 
-router.get("/chat/message", getMessageChatByRoom);
-router.get("/chat/room", getRoomChatById);
-router.get("/chat/user", getMessageByUserId);
-router.get("/chat/notif", getNotificationById);
+// router.get("/chat/notif", getNotificationById);
 
-router.post("/", postRoomChat);
-router.post("/message", postMessage);
+router.get("/myfriend/:id", getFriend);
+router.get("/roomid/:id", getRoomMessage);
+
+router.post("/add", addFriend);
+router.post("/room/", postRoomChat);
+router.post("/msg/", postMessage);
 
 module.exports = router;

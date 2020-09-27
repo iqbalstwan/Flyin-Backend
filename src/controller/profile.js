@@ -125,27 +125,22 @@ module.exports = {
   patchProfile: async (request, response) => {
     try {
       const { id } = request.params;
-      const {
-        user_id,
-        user_name,
-        profile_name,
-        profile_telp,
-        profile_desc,
-      } = request.body;
+      const { user_id, user_name, user_phone, profile_desc } = request.body;
       const checkUser = await getUserById(user_id);
       const checkId = await getProfileById(id);
+      console.log(request.body);
       if (checkId.length > 0 && checkUser.length > 0) {
         const setDataUser = {
           user_name,
+          user_phone,
         };
-        await patchUser(setDataUser, user_id);
         const setDataProfile = {
-          profile_name,
-          profile_telp,
           profile_desc,
           profile_updated_at: new Date(),
         };
-        const result = await patchProfile(setDataProfile, id);
+        const result = await patchUser(setDataUser, user_id);
+
+        await patchProfile(setDataProfile, id);
         return helper.response(response, 200, "Patch Done", result);
       } else {
         return helper.response(response, 404, `Profile By Id: ${id} Not Found`);

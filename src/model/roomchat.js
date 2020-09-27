@@ -1,10 +1,62 @@
 const connection = require("../config/mysql");
 
 module.exports = {
+  addFriend: (setData) => {
+    return new Promise((resolve, reject) => {
+      connection.query(`INSERT INTO friend SET ?`, setData, (error, data) => {
+        !error ? resolve(data) : reject(new Error(error));
+      });
+    });
+  },
+  getAllFriend: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT friend.friend_id, user.user_name,user.user_phone, profile.profile_desc,profile.profile_img FROM friend JOIN user ON friend.friend_id = user.user_id  JOIN profile ON friend.friend_id = profile.user_id WHERE friend.user_id = ?`,
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  getUserByEmail: (email) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM user WHERE user_email = '${email}'`,
+
+        (error, data) => {
+          !error ? resolve(data) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  checkRoom: (user_id, friend_id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM roomchat WHERE user_id = ? AND friend_id = ?`,
+        [user_id, friend_id],
+        (error, data) => {
+          !error ? resolve(data) : reject(new Error(error));
+        }
+      );
+    });
+  },
+  checkRoomById: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM roomchat WHERE roomchat_id = ?`,
+        id,
+        (error, data) => {
+          !error ? resolve(data) : reject(new Error(error));
+        }
+      );
+    });
+  },
+
   getMessageByUserId: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM messages LEFT JOIN user ON messages.user_id = user.user_id WHERE messages.user_id = ?",
+        "SELECT * FROM messages WHERE roomchat_id = ?",
         id,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
