@@ -164,6 +164,8 @@ module.exports = {
         return helper.response(response, 400, "Email is not registered !");
       }
     } catch (error) {
+      console.log(error);
+
       return helper.response(response, 400, "Bad Request");
     }
   },
