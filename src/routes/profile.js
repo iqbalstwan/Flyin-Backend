@@ -4,6 +4,7 @@ const {
   getProfileById,
   patchProfile,
   patchImageProfile,
+  deleteImg,
   //   deleteProfile,
 } = require("../controller/profile");
 const uploadImage = require("../middleware/multer");
@@ -13,6 +14,7 @@ router.get("/:id", getProfileById);
 
 router.patch("/:id", patchProfile);
 router.patch("/patchimg/:id", uploadImage, patchImageProfile);
+router.delete("/deleteimg/:id", deleteImg);
 
 // router.delete("/:id", deleteProfile);
 

@@ -86,13 +86,13 @@ module.exports = {
       );
     });
   },
-  getNotificationById: (id) => {
+  getRoomByUser: (friend_id, user_id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM notification LEFT JOIN user ON notification.user_id = user.user_id WHERE notification.user_id = ?",
-        id,
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
+        "SELECT user_name, user_phone, user_email,profile_img FROM roomchat JOIN user ON roomchat.friend_id = user.user_id JOIN profile ON roomchat.friend_id = profile.user_id WHERE roomchat.friend_id = ? AND roomchat.user_id = ? ",
+        [friend_id, user_id],
+        (error, data) => {
+          !error ? resolve(data) : reject(new Error(error));
         }
       );
     });
@@ -135,21 +135,13 @@ module.exports = {
       );
     });
   },
-  postNotification: (setData) => {
+  getAllRoom: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "INSERT INTO notification SET ?",
-        setData,
-        (error, result) => {
-          if (!error) {
-            const newResult = {
-              notif_id: result.insertId,
-              ...setData,
-            };
-            resolve(newResult);
-          } else {
-            reject(new Error(error));
-          }
+        "SELECT roomchat.id, roomchat.roomchat_id,roomchat.friend_id,roomchat.user_id,profile.profile_img,user.user_name FROM roomchat JOIN user ON roomchat.friend_id = user.user_id JOIN profile ON roomchat.friend_id = profile.user_id WHERE roomchat.user_id = ?",
+        id,
+        (error, data) => {
+          !error ? resolve(data) : reject(new Error(error));
         }
       );
     });

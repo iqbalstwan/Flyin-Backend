@@ -3,7 +3,8 @@ const {
   addFriend,
   getFriend,
   getRoomMessage,
-  //   getNotificationById,
+  getUserRoom,
+  getAllUserRoom,
   postRoomChat,
   postMessage,
 } = require("../controller/roomchat");
@@ -12,6 +13,8 @@ const {
 
 router.get("/myfriend/:id", getFriend);
 router.get("/roomid/:id", getRoomMessage);
+router.get("/roomuser", getUserRoom);
+router.get("/getroom/:id", getAllUserRoom);
 
 router.post("/add", addFriend);
 router.post("/room/", postRoomChat);

@@ -33,17 +33,6 @@ module.exports = {
       );
     });
   },
-  getProfileCompanyById: (id) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        "SELECT * FROM company_profile WHERE user_id = ?",
-        id,
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error));
-        }
-      );
-    });
-  },
   postProfile: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -86,6 +75,24 @@ module.exports = {
     return new Promise((resolve, reject) => {
       connection.query(
         "DELETE FROM profile WHERE profile_id = ?",
+        id,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              id: id,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error));
+          }
+        }
+      );
+    });
+  },
+  deleteImage: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE profile SET profile_img = 'blank-profile.jpg' WHERE profile_id = ?",
         id,
         (error, result) => {
           if (!error) {

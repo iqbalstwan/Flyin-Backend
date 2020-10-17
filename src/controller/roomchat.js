@@ -5,10 +5,11 @@ const {
   checkRoom,
   checkRoomById,
   getMessageByUserId,
-  getNotificationById,
+  getAllRoom,
+  getRoomByUser,
   postRoomChat,
   postMessage,
-  postNotification,
+  //   postNotification,
 } = require("../model/roomchat");
 
 const { getUserById } = require("../model/user");
@@ -29,7 +30,7 @@ module.exports = {
       return helper.response(response, 200, "Success add your friend", result2);
     } catch (error) {
       console.log(error);
-      return helper.response(response, 404, "Failed", error);
+      return helper.response(response, 404, "Cant add your friend", error);
     }
   },
   getFriend: async (request, response) => {
@@ -117,60 +118,52 @@ module.exports = {
   postRoomChat: async (request, response) => {
     const { user_id, friend_id } = request.body;
     try {
-      const check = await checkRoom(user_id, friend_id);
-      const IdRoom = Math.round(Math.random() * 100000);
-      const setData = {
-        roomchat_id: IdRoom,
-        user_id,
-        friend_id,
-      };
-      const setData2 = {
-        roomchat_id: IdRoom,
-        user_id: friend_id,
-        friend_id: user_id,
-      };
-      const createRoomChat = await postRoomChat(setData);
-      await postRoomChat(setData2);
-      return helper.response(
-        response,
-        200,
-        "Success create room chat",
-        createRoomChat
-      );
+      const checkIt = await checkRoom(user_id, friend_id);
+      const idRoom = Math.round(Math.random() * 100000);
+      if (checkIt.length < 1) {
+        const setData = {
+          roomchat_id: idRoom,
+          user_id,
+          friend_id,
+        };
+        const setData2 = {
+          roomchat_id: idRoom,
+          user_id: friend_id,
+          friend_id: user_id,
+        };
+        const createRoomChat = await postRoomChat(setData);
+        await postRoomChat(setData2);
+        return helper.response(
+          response,
+          200,
+          "Success create room chat",
+          createRoomChat
+        )
+      } else {
+        return helper.response(response, 200, "Already have room", checkIt);
+      }
     } catch (error) {
       console.log(error);
       return helper.response(response, 404, "Failed", error);
     }
   },
-
-  //   postMessage: async (request, response) => {
-  //     try {
-  //       const { roomchat_id, user_id, msg } = request.body;
-  //       const setData = {
-  //         roomchat_id,
-  //         user_id,
-  //         msg,
-  //         msg_created_at: new Date(),
-  //       };
-  //       const setData2 = {
-  //         roomchat_id,
-  //         user_id,
-  //         notif: "You've got a New Message",
-  //         notif_created_at: new Date(),
-  //       };
-  //       if (setData.roomchat_id === "") {
-  //         return helper.response(response, 404, ` Input roomchat id`);
-  //       } else if (setData.user_id === "") {
-  //         return helper.response(response, 404, ` Input user id`);
-  //       } else if (setData.msg === "") {
-  //         return helper.response(response, 404, ` Input message`);
-  //       } else {
-  //         const result = await postMessage(setData);
-  //         const notification = await postNotification(setData2);
-  //         return helper.response(response, 201, "Message Created", result);
-  //       }
-  //     } catch (error) {
-  //       return helper.response(response, 400, "Bad Request", error);
-  //     }
-  //   },
+  getUserRoom: async (request, response) => {
+    const { friends_id, user_id } = request.query;
+    try {
+      const result = await getRoomByUser(friends_id, user_id);
+      return helper.response(response, 200, "Success get room by user", result);
+    } catch (error) {
+      console.log(error);
+      return helper.response(response, 400, "Failed", error);
+    }
+  },
+  getAllUserRoom: async (request, response) => {
+    const { id } = request.params;
+    try {
+      const result = await getAllRoom(id);
+      return helper.response(response, 200, "Success get All room", result);
+    } catch (error) {
+      return helper.response(response, 404, "Failed", error);
+    }
+  },
 };

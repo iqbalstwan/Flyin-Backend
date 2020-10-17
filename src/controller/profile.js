@@ -4,6 +4,7 @@ const {
   getProfileCount,
   patchProfile,
   deleteProfile,
+  deleteImage,
 } = require("../model/profile");
 const { getUserById, patchUser } = require("../model/user");
 const fs = require("fs");
@@ -178,6 +179,26 @@ module.exports = {
     } catch (error) {
       console.log(error);
       //   return helper.response(response, 400, "Bad Request", error);
+    }
+  },
+  deleteImg: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const checkId = await getProfileById(id);
+      if (checkId.length > 0) {
+        fs.unlink(`./uploads/${checkId[0].profile_img}`, async (error) => {
+          if (error) {
+            throw error;
+          } else {
+            const result = await deleteImage(id);
+            return helper.response(response, 201, "Image Deleted", result);
+          }
+        });
+      } else {
+        return helper.response(response, 404, ` Not Found`);
+      }
+    } catch (error) {
+      return helper.response(response, 400, "Bad Request", error);
     }
   },
 };

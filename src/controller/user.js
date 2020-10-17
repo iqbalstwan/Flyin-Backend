@@ -80,9 +80,11 @@ module.exports = {
     try {
       if (checkEmail.length > 0) {
         return helper.response(response, 400, "Email is already registered");
+      } else if (!user_email.match("@")) {
+        return helper.response(response, 400, "Invalid,Missing Character('@')");
       } else if (
         setData.user_phone.length < 10 ||
-        setData.user_phone.length > 13
+        setData.user_phone.length > 12
       ) {
         return helper.response(response, 400, "Invalid phone number");
       } else if (
@@ -189,7 +191,7 @@ module.exports = {
         const minutesDifference = Math.floor(difference / 1000 / 60);
         if (minutesDifference > 5) {
           const data = {
-            user_key: "",
+            user_key: 0,
             user_updated_at: new Date(),
           };
           await changePassword(data, email);
@@ -227,7 +229,7 @@ module.exports = {
           const salt = bcrypt.genSaltSync(10);
           const encryptPassword = bcrypt.hashSync(user_password, salt);
           setData.user_password = encryptPassword;
-          setData.user_key = "";
+          setData.user_key = 0;
         }
         const result = await changePassword(setData, email);
         return helper.response(

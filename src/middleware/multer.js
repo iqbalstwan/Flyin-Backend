@@ -22,7 +22,7 @@ const fileFilter = (request, file, callback) => {
     callback(null, true);
   }
 };
-const maxSize = 2097152;
+const maxSize = 1 * 1024 * 1024;
 const upload = multer({
   storage,
   fileFilter,
