@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const qs = require("querystring");
 const {
-  getAllWorker,
   getAllUser,
   getUserCount,
   getUsersByName,
@@ -13,7 +12,6 @@ const {
   checkUser,
   checkKey,
   changePassword,
-  getCountWorker,
 } = require("../model/user");
 const { postProfile } = require("../model/profile");
 
@@ -76,6 +74,9 @@ module.exports = {
       user_phone,
       user_created_at: new Date(),
       user_status: 0,
+      user_key: 0,
+      lat: 0,
+      lng: 0,
     };
     try {
       if (checkEmail.length > 0) {
@@ -144,19 +145,13 @@ module.exports = {
             profile_img: checkDataUser[0].profile_img,
             profile_desc: checkDataUser[0].profile_desc,
             user_phone: checkDataUser[0].user_phone,
+            lat: checkDataUser[0].lat,
+            lng: checkDataUser[0].lng,
             user_status: checkDataUser[0].user_status,
           };
-          //   if (payload.user_status === 0) {
-          //     return helper.response(
-          //       response,
-          //       400,
-          //       "Your account is not activated"
-          //     );
-          //   } else {
           const token = jwt.sign(payload, "RAHASIA", { expiresIn: "24h" });
           payload = { ...payload, token };
           return helper.response(response, 200, "Success login", payload);
-          //   }
         } else {
           return helper.response(response, 400, "Wrong password !");
         }
@@ -263,15 +258,15 @@ module.exports = {
           port: 465,
           secure: true,
           auth: {
-            user: "marakez1234@gmail.com",
-            pass: "boromir12",
+            user: "oriza.sativa.matang@gmail.com",
+            pass: "Oriza.sativa8",
           },
         });
         await transporter.sendMail({
           from: '"Flyin"',
           to: user_email,
           subject: "Flyin - Forgot Password",
-          html: `<a href="http://localhost:8080/change?keys=${keys}">Click Here To Change Password</a>`,
+          html: `<a href="http://localhost:8081/change?keys=${keys}">Click Here To Change Password</a>`,
         }),
           function (error) {
             if (error) {

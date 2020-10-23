@@ -9,10 +9,8 @@ const {
   postMessage,
 } = require("../controller/roomchat");
 
-// router.get("/chat/notif", getNotificationById);
-
 router.get("/myfriend/:id", getFriend);
-router.get("/roomid/:id", getRoomMessage);
+router.get("/roomid", getRoomMessage);
 router.get("/roomuser", getUserRoom);
 router.get("/getroom/:id", getAllUserRoom);
 

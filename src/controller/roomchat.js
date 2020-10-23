@@ -61,59 +61,36 @@ module.exports = {
       return helper.response(response, 200, "Success send message", result);
     } catch (error) {
       console.log(error);
+      console.log(error);
       return helper.response(response, 404, "Failed", error);
     }
   },
   getRoomMessage: async (request, response) => {
     try {
-      const { id } = request.params;
-      const result = await checkRoomById(id);
-      if (result.length > 0) {
-        const getData = await getMessageByUserId(id);
+      const { roomchat_id, friend_id } = request.query;
+      console.log(request.query);
 
-        for (i = 0; i < getData.length; i++) {
-          const getSender = await getUserById(getData[i].user_id);
-          getData[i].sender = getSender[0].user_name;
-        }
+      const dataMsg = await getMessageByUserId(roomchat_id);
+      // console.log(getData);
+      const getUser = await getUserById(friend_id);
+      // console.log(userData);
+      const newResult = {
+        roomchat_id,
+        ...getUser[0],
+        dataMsg,
+      };
 
-        result[0].messages = getData;
-        return helper.response(
-          response,
-          200,
-          `Success get room chat by ID ${id}`,
-          result
-        );
-      } else {
-        return helper.response(response, 404, "Room chat is not found!");
-      }
+      return helper.response(
+        response,
+        200,
+        `Success get room chat by ID ${roomchat_id}`,
+        newResult
+      );
     } catch (error) {
       console.log(error);
       return helper.response(response, 404, "Failed", error);
     }
   },
-
-  //   getNotificationById: async (request, response) => {
-  //     try {
-  //       const { user_id } = request.body;
-  //       const result = await getNotificationById(user_id);
-  //       if (result.length > 0) {
-  //         return helper.response(
-  //           response,
-  //           200,
-  //           "Succes get Notification By User Id",
-  //           result
-  //         );
-  //       } else {
-  //         return helper.response(
-  //           response,
-  //           404,
-  //           `Notification By Id : ${user_id} Not Found`
-  //         );
-  //       }
-  //     } catch (error) {
-  //       return helper.response(response, 400, "Bad Request", error);
-  //     }
-  //   },
 
   postRoomChat: async (request, response) => {
     const { user_id, friend_id } = request.body;
@@ -138,7 +115,7 @@ module.exports = {
           200,
           "Success create room chat",
           createRoomChat
-        )
+        );
       } else {
         return helper.response(response, 200, "Already have room", checkIt);
       }
@@ -148,9 +125,9 @@ module.exports = {
     }
   },
   getUserRoom: async (request, response) => {
-    const { friends_id, user_id } = request.query;
+    const { friend_id, user_id } = request.query;
     try {
-      const result = await getRoomByUser(friends_id, user_id);
+      const result = await getRoomByUser(friend_id, user_id);
       return helper.response(response, 200, "Success get room by user", result);
     } catch (error) {
       console.log(error);

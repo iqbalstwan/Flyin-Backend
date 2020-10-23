@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -16,37 +17,21 @@ io.on("connection", (socket) => {
   socket.on("globalMessage", (data) => {
     io.emit("chatMessage", data);
   });
-  socket.on("privateMessage", (data) => {
-    socket.emit("chatMessage", data);
+  // ====================================
+  socket.on("setRoom", (data) => {
+    socket.join(data.newRoom);
+    console.log(`join room  + ${data.newRoom}`);
   });
-  socket.on("broadcastMessage", (data) => {
-    socket.broadcast.emit("chatMessage", data);
+  socket.on("changeRoom", (data) => {
+    console.log(`join change room  + ${data.newRoom}`);
+    socket.leave(data.oldRoom);
+    socket.join(data.newRoom);
   });
-  socket.on("welcomeMessage", (data) => {
-    socket.emit("chatMessage", {
-      username: "BOT",
-      message: `Welcome back brader ${data.username}`,
-    });
-    //global
-    // socket.broadcast.emit("chatMessage", {
-    //   username: "BOT",
-    //   message: `${data} has joined`,
-    // });
-    //spesific
-    socket.join(data.room);
-    socket.broadcast.to(data.room).emit("chatMessage", {
-      username: "BOT",
-      message: `${data.username} has joined`,
-    });
+  socket.on("roomyMsg", (data) => {
+    io.to(data.roomchat_id).emit("chatFlyin", data);
+    console.log(data);
   });
-  socket.on("typing", (data) => {
-    socket.broadcast.emit("typingMessage", data);
-    //spesific in room typing
-  });
-
-  socket.on("roomMessage", (data) => {
-    io.to(data.room).emit("chatMessage", data);
-  });
+  // ======================================
 });
 
 app.use(bodyParser.json());
@@ -56,6 +41,6 @@ app.use(express.static("uploads"));
 
 app.use("/", routerNavigation);
 
-server.listen(3000, () => {
-  console.log(`Express app is listening on port: 3000`);
+server.listen(process.env.PORT, () => {
+  console.log(`Express app is listening on port: ${process.env.PORT}`);
 });

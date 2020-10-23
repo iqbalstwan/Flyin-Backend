@@ -201,4 +201,19 @@ module.exports = {
       return helper.response(response, 400, "Bad Request", error);
     }
   },
+  mapPosition: async (request, response) => {
+    const { id } = request.params;
+    const { lat, lng } = request.body;
+    try {
+      const setData = {
+        lat,
+        lng,
+        user_updated_at: new Date(),
+      };
+      const result = await patchUser(setData, id);
+      return helper.response(response, 201, "Location Updated", result);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };

@@ -36,7 +36,7 @@ module.exports = {
   getUserById: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT user.user_id,user.user_name,user.user_email,user.user_password,user.user_phone,user.user_created_at,user.user_status,profile.profile_img,profile.profile_desc from user INNER JOIN profile ON user.user_id = profile.user_id where user.user_id = ?",
+        "SELECT user.user_id,user.user_name,user.user_email,user.user_password,user.user_phone,user.lat,user.lng,user.user_created_at,user.user_status,profile_id,profile.profile_img,profile.profile_desc from user INNER JOIN profile ON user.user_id = profile.user_id where user.user_id = ?",
         id,
         (error, result) => {
           if (!error) {
@@ -85,7 +85,7 @@ module.exports = {
   checkUser: (email) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT user.user_id,user.user_name,user.user_email,user.user_password,user.user_phone,user.user_created_at,user.user_status,profile.profile_img,profile.profile_desc from user INNER JOIN profile ON user.user_id = profile.user_id where user.user_email = ?",
+        "SELECT user.user_id,user.user_name,user.user_email,user.user_password,user.user_phone,user.lat,user.lng,user.user_created_at,user.user_status,profile.profile_img,profile.profile_desc from user INNER JOIN profile ON user.user_id = profile.user_id where user.user_email = ?",
         email,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
@@ -119,6 +119,28 @@ module.exports = {
           } else {
             reject(new Error(error));
           }
+        }
+      );
+    });
+  },
+  updateLng(lng, id) {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE user SET lng = ? WHERE user_id = ?`,
+        [lng, id],
+        (error, data) => {
+          !error ? resolve(data) : reject(error);
+        }
+      );
+    });
+  },
+  updateLat(lat, id) {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE user SET lat = ? WHERE user_id = ?`,
+        [lat, id],
+        (error, data) => {
+          !error ? resolve(data) : reject(error);
         }
       );
     });

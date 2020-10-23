@@ -56,7 +56,7 @@ module.exports = {
   getMessageByUserId: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM messages WHERE roomchat_id = ?",
+        "SELECT msg_id,roomchat_id,msg,user_name FROM messages JOIN user ON messages.user_id = user.user_id WHERE roomchat_id = ?",
         id,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
@@ -67,7 +67,7 @@ module.exports = {
   getMessageChatByRoom: (roomId) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM messages WHERE roomchat_id = ?",
+        "SELECT * FROM messages LEFT JOIN user ON messages.user_id = user.user_id WHERE roomchat_id = ?",
         roomId,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error));
