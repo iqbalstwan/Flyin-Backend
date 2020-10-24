@@ -1,6 +1,6 @@
 <h1 align="center">Flyin RESTfull API</h1>
 
-Flyin [More about Express](https://en.wikipedia.org/wiki/Express.js)
+Flyin is messaging app based on web. [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
 ## Built With
 
@@ -40,7 +40,7 @@ PORT=3000
 
 ## End Point
 
-Postman <a href="/">Here</a>
+Postman <a href="https://documenter.getpostman.com/view/12322442/TVYF7Htz">Here</a>
 
 ## Run the app
 
