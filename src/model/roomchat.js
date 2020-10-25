@@ -138,7 +138,7 @@ module.exports = {
   getAllRoom: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        "SELECT roomchat.id, roomchat.roomchat_id,roomchat.friend_id,roomchat.user_id,profile.profile_img,user.user_name FROM roomchat JOIN user ON roomchat.friend_id = user.user_id JOIN profile ON roomchat.friend_id = profile.user_id WHERE roomchat.user_id = ?",
+        "SELECT roomchat.id, roomchat.roomchat_id,roomchat.friend_id,roomchat.user_id,profile.profile_img,user.user_name,user_updated_at FROM roomchat JOIN user ON roomchat.friend_id = user.user_id JOIN profile ON roomchat.friend_id = profile.user_id WHERE roomchat.user_id = ?",
         id,
         (error, data) => {
           !error ? resolve(data) : reject(new Error(error));
