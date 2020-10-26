@@ -42,16 +42,7 @@ PORT=3000
 
 Postman <a href="https://documenter.getpostman.com/view/12322442/TVYF7Htz">Here</a>
 
-## Run the app
 
-Development mode
+### License
 
-```bash
-$ npm run dev
-```
-
-Deploy mode
-
-```bash
-$ npm start
-```
+&#169; Iqbal Setiawan
